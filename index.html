@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftWorld — Portail National Officiel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-card: rgba(15, 23, 42, 0.4);
+            --bg-card-hover: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-glow: rgba(56, 189, 248, 0.2);
+            --accent-color: #38bdf8;
+            --accent-success: #10b981;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+            --font-title: 'Space Grotesk', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 15% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* En-tête futuriste */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6, 9, 19, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area h1 {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 3px;
+            font-weight: 600;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav button:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        nav button.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.05));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Layout Principal */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 90%;
+            margin: 60px auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 45px;
+        }
+
+        .page-header h2 {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Grilles et Cartes */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            background-color: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.05);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Économie Vitrine */
+        .banknote-showcase {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Carrousel */
+        .carousel-container {
+            overflow: hidden;
+            width: 100%;
+            margin: 25px 0;
+            border-radius: 12px;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            gap: 20px;
+        }
+
+        .banknote-card {
+            min-width: 100%;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(0,0,0,0.4));
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 14px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        .banknote-card h3 {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .banknote-preview {
+            width: 100%;
+            height: 220px;
+            background: rgba(6, 9, 19, 0.5);
+            border: 1px dashed rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .banknote-preview::after {
+            content: '';
+            position: absolute;
+            width: 80%; height: 80%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            left: 10%; top: 10%;
+            z-index: 1;
+        }
+
+        .banknote-preview img {
+            height: 90px;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+            transition: transform 0.3s ease;
+        }
+
+        .banknote-card:hover .banknote-preview img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Commandes du carrousel */
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .btn-nav-arrow {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        /* Badges d'état */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+        .badge.pres { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge.gov { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge.local { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
+
+        .card h3 { font-family: var(--font-title); font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+        .card .role-title { color: var(--text-muted); font-size: 0.9rem; }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: auto;
+            letter-spacing: 0.5px;
+            background: rgba(4, 6, 12, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <h1>CraftWorld</h1>
+            <p>Système National Intégré</p>
+        </div>
+        <nav>
+            <button class="nav-btn active" onclick="switchPage('accueil')">Présentation</button>
+            <button class="nav-btn" onclick="switchPage('economie')">Économie</button>
+            <button class="nav-btn" onclick="switchPage('assemblee')">Gouvernance</button>
+            <button class="nav-btn" onclick="switchPage('etats')">Territoires</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- ACCUEIL -->
+        <div id="accueil" class="page active">
+            <div class="page-header">
+                <h2>Aperçu de la Nation</h2>
+                <p>Découvrez les fondements et les structures de l'écosystème institutionnel de CraftWorld.</p>
+            </div>
+            <div class="card" style="max-width: 800px; line-height: 1.8; color: #cbd5e1; font-size: 1.05rem;">
+                CraftWorld se positionne comme un espace géopolitique structuré, axé sur l'innovation d'infrastructure et la décentralisation de ses compétences régionales. Ce portail fournit un accès transparent aux données financières, législatives et territoriales à destination de ses citoyens et partenaires.
+            </div>
+        </div>
+
+        <!-- ECONOMIE -->
+        <div id="economie" class="page">
+            <div class="page-header">
+                <h2>Ressources & Économie</h2>
+                <p>Découvrez la gamme fiduciaire complète des CraftCash circulant sur le territoire.</p>
+            </div>
+            
+            <!-- Zone Showcase du Billet Unique Épurée -->
+            <div class="banknote-showcase">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2)">Gamme Fiduciaire Officielle</span>
+                
+                <div class="carousel-container">
+                    <div class="carousel-track" id="carouselTrack">
+                        
+                        <div class="banknote-card">
+                            <h3>1 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Stick</p>
+                            <div class="banknote-preview">
+                                <img src="https://minecraftitemids.com/item/64/stick.png" alt="Stick">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>10 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Charbon</p>
+                            <div class="banknote-preview">
+                                <img src="https://gamepedia.cursecdn.com/minecraft_gamepedia/5/58/Coal_JE4_BE3.png" alt="Charbon">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>100 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Bloc de Charbon</p>
+                            <div class="banknote-preview">
+                                <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/c/cc/Block_of_Coal_JE3_BE2.png/revision/latest?cb=20200224223204" alt="Bloc de Charbon">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>1 000 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Lingot de Fer</p>
+                            <div class="banknote-preview">
+                                <img src="https://minecraft-max.net/upload/iblock/69f/9xq72oh3ptmb0tacebcwrb33x7bldlex.png" alt="Fer">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>10 000 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Bloc de Fer</p>
+                            <div class="banknote-preview">
+                                <img src="https://minecraft-recipe.com/img/blocs2/042-metal.png" alt="Bloc de Fer">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>100 000 CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Lingot d'Or</p>
+                            <div class="banknote-preview">
+                                <img src="https://art.pixilart.com/dc6aeae39891f97.png" alt="Or">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>1 Million CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Bloc d'Or</p>
+                            <div class="banknote-preview">
+                                <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/72/Block_of_Gold_JE6_BE3.png/revision/latest?cb=20200226013525" alt="Bloc d'Or">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>10 Millions CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Bloc d'Or + 2 Blocs de Fer</p>
+                            <div class="banknote-preview">
+                                <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/72/Block_of_Gold_JE6_BE3.png/revision/latest?cb=20200226013525" alt="Bloc d'Or">
+                                <span style="font-size: 2rem; color: var(--text-muted); z-index: 2;">+</span>
+                                <img src="https://minecraft-recipe.com/img/blocs2/042-metal.png" alt="Bloc de Fer" style="height: 65px;">
+                                <span style="font-size: 1.2rem; color: #fff; z-index: 2; margin-left: -10px; font-weight: bold;">x2</span>
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>1 Milliard CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Diamant</p>
+                            <div class="banknote-preview">
+                                <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/ab/Diamond_JE3_BE3.png/revision/latest?cb=20230924193138" alt="Diamant">
+                            </div>
+                        </div>
+
+                        <div class="banknote-card">
+                            <h3>10 Milliards CraftCash</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Valeur standard : 1 Bloc de Diamant</p>
+                            <div class="banknote-preview">
+                                <img src="https://minecraft.wiki/images/Block_of_Diamond_JE5_BE3.png?542ee" alt="Bloc de Diamant">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <button class="btn-nav-arrow" onclick="moveCarousel(-1)">←</button>
+                    <span id="carouselIndex" style="font-size:0.9rem; font-weight: 600; color:var(--text-muted);">Billet 1 sur 10</span>
+                    <button class="btn-nav-arrow" onclick="moveCarousel(1)">→</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GOUVERNANCE -->
+        <div id="assemblee" class="page">
+            <div class="page-header">
+                <h2>Organigramme Politique</h2>
+                <p>Autorités exécutives et assemblée constituante de la république.</p>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <span class="badge pres">Présidence</span>
+                    <h3>Alex</h3>
+                    <p class="role-title">Président de la République</p>
+                </div>
+                <div class="card">
+                    <span class="badge gov">Sa Majesté</span>
+                    <h3>Marc 1er</h3>
+                    <p class="role-title">Roi de la République</p>
+                </div>
+                <div class="card">
+                    <span class="badge gov">Ministère</span>
+                    <h3>Direction des Finances</h3>
+                    <p class="role-title">Fufu</p>
+                </div>
+                <div class="card">
+                    <span class="badge local">Municipalité</span>
+                    <h3>Maire de CraftTopia</h3>
+                    <p class="role-title">Fufu</p>
+                </div>
+                <div class="card">
+                    <span class="badge local">Municipalité</span>
+                    <h3>Maire de Evry</h3>
+                    <p class="role-title">Alex</p>
+                </div>
+                <div class="card">
+                    <span class="badge local">Municipalité</span>
+                    <h3>Maire de Ajaxxio</h3>
+                    <p class="role-title">Ajaxx</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TERRITOIRES -->
+        <div id="etats" class="page">
+            <div class="page-header">
+                <h2>Divisions Territoriales</h2>
+                <p>Cartographie et états fédérés rattachés à l'autorité centrale.</p>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Région CraftTopia Capitale</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; line-height: 1.6;">Capitale du pays.</p>
+                </div>
+                <div class="card">
+                    <h3>Compté d'Évry Capitale Administrative</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; line-height: 1.6;">Zone administrative abritant des complexes de recherche et des réserves minérales stratégiques.</p>
+                </div>
+                <div class="card">
+                    <h3>Secteur TEXAS</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; line-height: 1.6;">Territoires Désertiques de basse altitude optimisés pour la recherche de la lave.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 CraftWorld — Tous droits réservés. Portail National Officiel. RP et informations à caractère fictif. Toute ressemblance avec des entités réelles est purement fortuite.
+    </footer>
+
+    <script>
+        // Changement d'onglets
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Logique du Carrousel
+        let currentIndex = 0;
+        const track = document.getElementById('carouselTrack');
+        const cards = document.querySelectorAll('.banknote-card');
+        const indicator = document.getElementById('carouselIndex');
+
+        // Initialisation de l'indicateur
+        indicator.innerText = `Billet ${currentIndex + 1} sur ${cards.length}`;
+
+        function moveCarousel(direction) {
+            currentIndex += direction;
+            
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+
+            track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${currentIndex * 20}px))`;
+            indicator.innerText = `Billet ${currentIndex + 1} sur ${cards.length}`;
+        }
+    </script>
+</body>
+</html>
