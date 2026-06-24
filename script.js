@@ -54,9 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
             adContent += `<span class="ad-promo-badge">${adPromo}</span>`;
         }
 
+        // On injecte le contenu
         dynamicAd.innerHTML = adContent;
-        // Ajout d'une fine lueur subtile assortie à la couleur de la marque
-        dynamicAd.style.borderColor = `rgba(${hexToRgb(adColor)}, 0.15)`;
+        
+        // On applique la couleur directement sur la bordure sans passer par la fonction RGB
+        dynamicAd.style.borderColor = adColor;
     }
 
     // ==========================================
