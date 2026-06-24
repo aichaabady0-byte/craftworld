@@ -153,6 +153,65 @@
             font-size: 1.1rem;
         }
 
+        /* Zone Publicitaire Professionnelle */
+        .ads-container {
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .ad-banner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 30px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .ad-tag {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .ad-title {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .ad-description {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            max-width: 70%;
+            line-height: 1.5;
+        }
+
+        .ad-promo-badge {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
         /* Grilles et Cartes */
         .grid {
             display: grid;
@@ -335,15 +394,24 @@
             <p>Système National Intégré</p>
         </div>
         <nav>
-            <button class="nav-btn active" onclick="switchPage('accueil')">Présentation</button>
-            <button class="nav-btn" onclick="switchPage('economie')">Économie</button>
-            <button class="nav-btn" onclick="switchPage('assemblee')">Gouvernance</button>
-            <button class="nav-btn" onclick="switchPage('etats')">Territoires</button>
+            <button class="nav-btn active" id="btn-accueil">Présentation</button>
+            <button class="nav-btn" id="btn-economie">Économie</button>
+            <button class="nav-btn" id="btn-assemblee">Gouvernance</button>
+            <button class="nav-btn" id="btn-etats">Territoires</button>
         </nav>
     </header>
 
     <main>
-        <!-- ACCUEIL -->
+        <div class="ads-container">
+            <div id="dynamic-ad" class="ad-banner" 
+                 data-title="BlabPRO — Messagerie Instantanée" 
+                 data-desc="Rejoignez la plateforme de communication cryptée officielle de CraftWorld. Rapide, sécurisée et performante." 
+                 data-color="#38bdf8" 
+                 data-promo="Gratuit ce mois-ci">
+                 <span class="ad-tag">Sponsorisé</span>
+                 </div>
+        </div>
+
         <div id="accueil" class="page active">
             <div class="page-header">
                 <h2>Aperçu de la Nation</h2>
@@ -354,14 +422,12 @@
             </div>
         </div>
 
-        <!-- ECONOMIE -->
         <div id="economie" class="page">
             <div class="page-header">
                 <h2>Ressources & Économie</h2>
                 <p>Découvrez la gamme fiduciaire complète des CraftCash circulant sur le territoire.</p>
             </div>
             
-            <!-- Zone Showcase du Billet Unique Épurée -->
             <div class="banknote-showcase">
                 <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2)">Gamme Fiduciaire Officielle</span>
                 
@@ -455,14 +521,13 @@
                 </div>
 
                 <div class="carousel-controls">
-                    <button class="btn-nav-arrow" onclick="moveCarousel(-1)">←</button>
+                    <button class="btn-nav-arrow" id="carousel-prev">←</button>
                     <span id="carouselIndex" style="font-size:0.9rem; font-weight: 600; color:var(--text-muted);">Billet 1 sur 10</span>
-                    <button class="btn-nav-arrow" onclick="moveCarousel(1)">→</button>
+                    <button class="btn-nav-arrow" id="carousel-next">→</button>
                 </div>
             </div>
         </div>
 
-        <!-- GOUVERNANCE -->
         <div id="assemblee" class="page">
             <div class="page-header">
                 <h2>Organigramme Politique</h2>
@@ -483,12 +548,12 @@
                 <div class="card">
                     <span class="badge gov">Ministère</span>
                     <h3>Direction des Finances</h3>
-                    <p class="role-title">Fufu</p>
+                    <p class="role-title">Ashkan Abady</p>
                 </div>
                 <div class="card">
                     <span class="badge local">Municipalité</span>
                     <h3>Maire de CraftTopia</h3>
-                    <p class="role-title">Fufu</p>
+                    <p class="role-title">Ashkan Abady</p>
                 </div>
                 <div class="card">
                     <span class="badge local">Municipalité</span>
@@ -503,7 +568,6 @@
             </div>
         </div>
 
-        <!-- TERRITOIRES -->
         <div id="etats" class="page">
             <div class="page-header">
                 <h2>Divisions Territoriales</h2>
@@ -531,34 +595,6 @@
         &copy; 2026 CraftWorld — Tous droits réservés. Portail National Officiel. RP et informations à caractère fictif. Toute ressemblance avec des entités réelles est purement fortuite.
     </footer>
 
-    <script>
-        // Changement d'onglets
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-            document.getElementById(pageId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        // Logique du Carrousel
-        let currentIndex = 0;
-        const track = document.getElementById('carouselTrack');
-        const cards = document.querySelectorAll('.banknote-card');
-        const indicator = document.getElementById('carouselIndex');
-
-        // Initialisation de l'indicateur
-        indicator.innerText = `Billet ${currentIndex + 1} sur ${cards.length}`;
-
-        function moveCarousel(direction) {
-            currentIndex += direction;
-            
-            if (currentIndex < 0) currentIndex = 0;
-            if (currentIndex >= cards.length) currentIndex = cards.length - 1;
-
-            track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${currentIndex * 20}px))`;
-            indicator.innerText = `Billet ${currentIndex + 1} sur ${cards.length}`;
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
