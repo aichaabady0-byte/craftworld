@@ -1,125 +1,115 @@
-// Utilisation d'une IIFE (Expression de fonction immédiatement invoquée) pour encapsuler le code 
-// et éviter que des utilisateurs malveillants puissent accéder ou modifier les variables via la console (Anti-Leak/Anti-XSS)
-(function () {
-    'use strict';
-
-    // ---- 1. GESTION DU SYSTÈME PUBLICITAIRE SÉCURISÉ ----
-    const adContainer = document.getElementById('dynamic-ad');
-    
-    if (adContainer) {
-        // Extraction sécurisée des données depuis les data-attributes du HTML
-        // textContent est utilisé à la place de innerHTML pour empêcher l'exécution de scripts malveillants injectés (XSS)
-        const titleText = adContainer.getAttribute('data-title') || 'Annonce Spéciale';
-        const descText = adContainer.getAttribute('data-desc') || '';
-        const accentColor = adContainer.getAttribute('data-color') || '#38bdf8';
-        const promoText = adContainer.getAttribute('data-promo') || '';
-
-        // Application dynamique de la couleur d'accent publicitaire sur la bordure et la lueur de survol
-        adContainer.style.borderColor = `rgba(${hexToRgb(accentColor)}, 0.15)`;
-        
-        adContainer.addEventListener('mouseenter', () => {
-            adContainer.style.boxShadow = `0 0 25px rgba(${hexToRgb(accentColor)}, 0.15)`;
-            adContainer.style.borderColor = accentColor;
-        });
-        adContainer.addEventListener('mouseleave', () => {
-            adContainer.style.boxShadow = 'none';
-            adContainer.style.borderColor = `rgba(${hexToRgb(accentColor)}, 0.15)`;
-        });
-
-        // Construction sécurisée des éléments à l'intérieur de la bannière
-        const titleEl = document.createElement('h3');
-        titleEl.className = 'ad-title';
-        titleEl.style.color = accentColor;
-        titleEl.textContent = titleText;
-
-        const descEl = document.createElement('p');
-        descEl.className = 'ad-description';
-        descEl.textContent = descText;
-
-        adContainer.appendChild(titleEl);
-        adContainer.appendChild(descEl);
-
-        // Ajout conditionnel du badge de promotion s'il existe
-        if (promoText) {
-            const promoEl = document.createElement('span');
-            promoEl.className = 'ad-promo-badge';
-            promoEl.textContent = promoText;
-            adContainer.appendChild(promoEl);
-        }
-    }
-
-    // Fonction utilitaire pour convertir le HEX en RVB (nécessaire pour gérer l'opacité CSS dynamiquement)
-    function hexToRgb(hex) {
-        let c;
-        if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-            c= hex.substring(1).split('');
-            if(c.length== 3){
-                c= [c[0], c[0], c[1], c[1], c[2], c[2]];
-            }
-            c= '0x'+c.join('');
-            return [(c>>16)&255, (c>>8)&255, c&255].join(',');
-        }
-        return '56, 189, 248'; // Valeur par défaut si invalide
-    }
-
-
-    // ---- 2. NAVIGATION DES ONGLETS DE LA PAGE ----
+document.addEventListener('DOMContentLoaded', () => {
+    // ==========================================
+    // 1. GESTION DU SYSTÈME DE NAVIGATION (ONGLETS)
+    // ==========================================
     const navButtons = document.querySelectorAll('.nav-btn');
     const pages = document.querySelectorAll('.page');
 
-    navButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const targetPageId = button.id.replace('btn-', '');
-            
-            pages.forEach(p => p.classList.remove('active'));
-            navButtons.forEach(b => b.classList.remove('active'));
+    // Dictionnaire reliant l'ID du bouton à l'ID de la page correspondante
+    const pageMapping = {
+        'btn-accueil': 'accueil',
+        'btn-economie': 'economie',
+        'btn-assemblee': 'assemblee',
+        'btn-etats': 'etats'
+    };
 
-            const targetPage = document.getElementById(targetPageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetPageId = pageMapping[button.id];
+            
+            if (targetPageId) {
+                // Retirer la classe active de tous les boutons et toutes les pages
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                pages.forEach(page => page.classList.remove('active'));
+
+                // Activer le bouton et la page cibles
                 button.classList.add('active');
+                const targetPage = document.getElementById(targetPageId);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                }
             }
         });
     });
 
+    // ==========================================
+    // 2. INJECTION DYNAMIQUE DE LA PUBLICITÉ (BlabPRO)
+    // ==========================================
+    const dynamicAd = document.getElementById('dynamic-ad');
+    if (dynamicAd) {
+        // Extraction des attributs "data-" présents dans le HTML
+        const adTitle = dynamicAd.getAttribute('data-title') || 'Sponsorisé';
+        const adDesc = dynamicAd.getAttribute('data-desc') || '';
+        const adColor = dynamicAd.getAttribute('data-color') || '#38bdf8';
+        const adPromo = dynamicAd.getAttribute('data-promo') || '';
 
-    // ---- 3. LOGIQUE DU CARROUSEL ÉCONOMIQUE ----
-    let currentIndex = 0;
+        // Construction du contenu HTML interne de la bannière
+        let adContent = `
+            <span class="ad-tag">Sponsorisé</span>
+            <div class="ad-title" style="color: ${adColor};">${adTitle}</div>
+            <div class="ad-description">${adDesc}</div>
+        `;
+
+        if (adPromo) {
+            adContent += `<span class="ad-promo-badge">${adPromo}</span>`;
+        }
+
+        dynamicAd.innerHTML = adContent;
+        // Ajout d'une fine lueur subtile assortie à la couleur de la marque
+        dynamicAd.style.borderColor = `rgba(${hexToRgb(adColor)}, 0.15)`;
+    }
+
+    // ==========================================
+    // 3. GESTION DU CARROUSEL FI-DUCIAIRE (CraftCash)
+    // ==========================================
     const track = document.getElementById('carouselTrack');
-    const cards = document.querySelectorAll('.banknote-card');
-    const indicator = document.getElementById('carouselIndex');
     const prevBtn = document.getElementById('carousel-prev');
     const nextBtn = document.getElementById('carousel-next');
+    const indexDisplay = document.getElementById('carouselIndex');
+    
+    if (track && prevBtn && nextBtn && indexDisplay) {
+        const cards = Array.from(track.children);
+        const totalCards = cards.length; // Détecte automatiquement les 10 billets
+        let currentIndex = 0;
 
-    if (track && cards.length > 0 && indicator) {
-        // Initialisation de l'indicateur de page
-        updateCarouselIndicator();
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                moveCarousel(-1);
-            });
+        function updateCarousel() {
+            // Déplacement du conteneur (track) en fonction de l'index de la carte (largeur + gap de 20px)
+            // Utilisation de calc() combiné avec flex-gap pour gérer l'espacement proprement
+            track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${currentIndex * 20}px))`;
+            
+            // Mise à jour de l'indicateur textuel (Billet X sur 10)
+            indexDisplay.textContent = `Billet ${currentIndex + 1} sur ${totalCards}`;
         }
 
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                moveCarousel(1);
-            });
-        }
+        // Événement clic sur le bouton Suivant
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < totalCards - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Retour au premier billet (boucle en continu)
+            }
+            updateCarousel();
+        });
+
+        // Événement clic sur le bouton Précédent
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = totalCards - 1; // Aller au dernier billet (boucle inversée)
+            }
+            updateCarousel();
+        });
+
+        // Initialisation de l'affichage au démarrage
+        updateCarousel();
     }
 
-    function moveCarousel(direction) {
-        currentIndex += direction;
-        
-        if (currentIndex < 0) currentIndex = 0;
-        if (currentIndex >= cards.length) currentIndex = cards.length - 1;
-
-        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${currentIndex * 20}px))`;
-        updateCarouselIndicator();
+    // Fonction utilitaire pour convertir le HEX en RVB (nécessaire pour l'opacité CSS)
+    function hexToRgb(hex) {
+        const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '56, 189, 248';
     }
-
-    function updateCarouselIndicator() {
-        indicator.innerText = `Billet ${currentIndex + 1} sur ${cards.length}`;
-    }
-
-})();
+});
